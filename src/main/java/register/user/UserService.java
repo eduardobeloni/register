@@ -34,12 +34,13 @@ public class UserService {
 		this.userRepo.save(user);
 	}
 
-	public User getUser(String email, String password) {
+	public UserTO getUserByLogin(String email, String password) {
+		UserTO userTO = new UserTO();
 		List<User> users = this.userRepo.findByEmailAndPassword(email, password);
 		if (users.size() > 0)
-			return users.get(0);
+			userTO = assembleUserTO(users.get(0));
 
-		return new User();
+		return userTO;
 	}
 
 	public UserTO getUserById(Integer id) {

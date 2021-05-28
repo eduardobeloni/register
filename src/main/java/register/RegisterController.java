@@ -27,11 +27,11 @@ public class RegisterController {
 	@RequestMapping(method = RequestMethod.POST, value = "/login")
 	public RedirectView login(@RequestBody User user) {
 		String redirectUrl;
-		User u = this.userService.getUser(user.getEmail(), user.getPassword());
+		UserTO userTO = this.userService.getUserByLogin(user.getEmail(), user.getPassword());
 
-		if (u.getId() != null) {
-			redirectUrl = "/myregisters/" + u.getId();
-			if (u.getName().equals("admin")) {
+		if (userTO.getId() != null) {
+			redirectUrl = "/myregisters/" + userTO.getId();
+			if (userTO.getName().equals("admin")) {
 				redirectUrl = "/dashboard";
 			}
 		} else {
