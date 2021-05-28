@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.view.RedirectView;
 
 import register.time.RegisteredTimeService;
 import register.user.User;
@@ -24,9 +25,18 @@ public class RegisterController {
 	UserService userService;
 
 	@RequestMapping(method = RequestMethod.POST, value = "/register")
-	public void registerTime(@RequestBody User user) {
+	public RedirectView registerTime(@RequestBody User user) {
+		String redirectUrl;
 		User u = this.userService.getUser(user.getEmail(), user.getPassword());
+
+		if (u.getId() != null)
+			redirectUrl = "list/" + u.getId();
+		else
+			redirectUrl = "/invalidlogin";
+
 		this.regTimeService.registerTime(u);
+
+		return new RedirectView(redirectUrl);
 	}
 
 	@RequestMapping(method = RequestMethod.GET, value = "/list")
@@ -39,4 +49,8 @@ public class RegisterController {
 		return this.userService.getUserById(id);
 	}
 
+	@RequestMapping(method = RequestMethod.GET, value = "/invalidlogin")
+	public String getInvalidLogin() {
+		return "This login is invalid. Try again";
+	}
 }
