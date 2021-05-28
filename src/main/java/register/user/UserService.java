@@ -27,7 +27,7 @@ public class UserService {
 		for (RegisteredTime regTime : regTimes)
 			timesRegistered.add(regTime.getTimeRegistered());
 
-		return new UserTO(user.getName(), user.getEmail(), user.getRole(), timesRegistered);
+		return new UserTO(user.getId(), user.getName(), timesRegistered);
 	}
 
 	public void createUser(User user) {
