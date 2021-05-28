@@ -22,12 +22,12 @@ public class UserService {
 		this.userRepo.save(user);
 	}
 
-	public User getUser(String email, String password) {
+	public Integer getUserId(String email, String password) {
 		List<User> users = this.userRepo.findByEmailAndPassword(email, password);
 		if (users.size() > 0)
-			return users.get(0);
+			return users.get(0).getId();
 
-		return new User();
+		return null;
 	}
 
 	public User getById(Integer id) {
