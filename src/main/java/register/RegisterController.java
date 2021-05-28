@@ -52,8 +52,8 @@ public class RegisterController {
 	}
 
 	@RequestMapping(method = RequestMethod.POST, value = "register/{id}")
-	public void register(@PathVariable Integer id) {
-		this.regTimeService.registerTime(id);
+	public Boolean register(@PathVariable Integer id) {
+		return this.regTimeService.registerTime(id);
 	}
 
 	@RequestMapping(method = RequestMethod.GET, value = "/invalidlogin")

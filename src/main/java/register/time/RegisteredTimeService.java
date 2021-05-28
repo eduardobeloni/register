@@ -18,7 +18,7 @@ public class RegisteredTimeService {
 	@Autowired
 	UserRepository userRepo;
 
-	public void registerTime(Integer id) {
+	public Boolean registerTime(Integer id) {
 		RegisteredTime regTime = new RegisteredTime();
 		Optional<User> userOpt = this.userRepo.findById(id);
 
@@ -26,6 +26,10 @@ public class RegisteredTimeService {
 			regTime.setTimeRegistered(LocalDateTime.now());
 			regTime.setUserId(userOpt.get().getId());
 			this.regTimeRepo.save(regTime);
+
+			return true;
 		}
+
+		return false;
 	}
 }
