@@ -1,11 +1,13 @@
 package register.time;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import register.user.User;
+import register.user.UserRepository;
 
 @Service
 public class RegisteredTimeService {
@@ -13,12 +15,16 @@ public class RegisteredTimeService {
 	@Autowired
 	RegisteredTimeRepository regTimeRepo;
 
-	public void registerTime(User user) {
-		RegisteredTime regTime = new RegisteredTime();
+	@Autowired
+	UserRepository userRepo;
 
-		if (user.getId() != null) {
+	public void registerTime(Integer id) {
+		RegisteredTime regTime = new RegisteredTime();
+		Optional<User> userOpt = this.userRepo.findById(id);
+
+		if (userOpt.isPresent()) {
 			regTime.setTimeRegistered(LocalDateTime.now());
-			regTime.setUserId(user.getId());
+			regTime.setUserId(userOpt.get().getId());
 			this.regTimeRepo.save(regTime);
 		}
 	}

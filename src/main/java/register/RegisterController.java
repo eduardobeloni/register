@@ -24,29 +24,36 @@ public class RegisterController {
 	@Autowired
 	UserService userService;
 
-	@RequestMapping(method = RequestMethod.POST, value = "/register")
-	public RedirectView registerTime(@RequestBody User user) {
+	@RequestMapping(method = RequestMethod.POST, value = "/login")
+	public RedirectView login(@RequestBody User user) {
 		String redirectUrl;
 		User u = this.userService.getUser(user.getEmail(), user.getPassword());
 
-		if (u.getId() != null)
-			redirectUrl = "list/" + u.getId();
-		else
+		if (u.getId() != null) {
+			redirectUrl = "/myregisters/" + u.getId();
+			if (u.getName().equals("admin")) {
+				redirectUrl = "/dashboard";
+			}
+		} else {
 			redirectUrl = "/invalidlogin";
-
-		this.regTimeService.registerTime(u);
+		}
 
 		return new RedirectView(redirectUrl);
 	}
 
-	@RequestMapping(method = RequestMethod.GET, value = "/list")
+	@RequestMapping(method = RequestMethod.GET, value = "/dashboard")
 	public List<UserTO> getAllUsers() {
 		return this.userService.getAllUsers();
 	}
 
-	@RequestMapping(method = RequestMethod.GET, value = "/list/{id}")
+	@RequestMapping(method = RequestMethod.GET, value = "/myregisters/{id}")
 	public UserTO getUser(@PathVariable Integer id) {
 		return this.userService.getUserById(id);
+	}
+
+	@RequestMapping(method = RequestMethod.POST, value = "register/{id}")
+	public void register(@PathVariable Integer id) {
+		this.regTimeService.registerTime(id);
 	}
 
 	@RequestMapping(method = RequestMethod.GET, value = "/invalidlogin")
