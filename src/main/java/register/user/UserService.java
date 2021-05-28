@@ -3,6 +3,7 @@ package register.user;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,6 +20,16 @@ public class UserService {
 	@Autowired
 	private RegisteredTimeRepository regTimeRepo;
 
+	private UserTO assembleUserTO(User user) {
+		List<LocalDateTime> timesRegistered = new ArrayList<>();
+
+		List<RegisteredTime> regTimes = this.regTimeRepo.findByUserId(user.getId());
+		for (RegisteredTime regTime : regTimes)
+			timesRegistered.add(regTime.getTimeRegistered());
+
+		return new UserTO(user.getName(), user.getEmail(), user.getRole(), timesRegistered);
+	}
+
 	public void createUser(User user) {
 		this.userRepo.save(user);
 	}
@@ -31,24 +42,25 @@ public class UserService {
 		return null;
 	}
 
-	public List<LocalDateTime> getRegisteredTimesByUserId(Integer id) {
-		List<LocalDateTime> timesRegistered = new ArrayList<>();
-		List<RegisteredTime> regTimes = regTimeRepo.findByUserId(id);
+	public UserTO getUserById(Integer id) {
+		UserTO userTO = new UserTO();
+		Optional<User> userOpt = this.userRepo.findById(id);
 
-		for (RegisteredTime regTime : regTimes)
-			timesRegistered.add(regTime.getTimeRegistered());
+		if (userOpt.isPresent())
+			userTO = assembleUserTO(userOpt.get());
 
-		return timesRegistered;
+		return userTO;
 	}
 
-	public List<User> getAllUsers() {
+	public List<UserTO> getAllUsers() {
 		List<User> users = new ArrayList<>();
+		List<UserTO> usersTO = new ArrayList<>();
 
 		this.userRepo.findAll().forEach(users::add);
 		for (User user : users)
-			user.setRegisteredTimes(this.regTimeRepo.findByUserId(user.getId()));
+			usersTO.add(assembleUserTO(user));
 
-		return users;
+		return usersTO;
 	}
 
 }
