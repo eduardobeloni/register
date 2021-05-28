@@ -25,8 +25,8 @@ public class RegisterController {
 
 	@RequestMapping(method = RequestMethod.POST, value = "/register")
 	public void registerTime(@RequestBody User user) {
-		Integer userId = this.userService.getUserId(user.getEmail(), user.getPassword());
-		this.regTimeService.registerTime(userId);
+		User u = this.userService.getUser(user.getEmail(), user.getPassword());
+		this.regTimeService.registerTime(u);
 	}
 
 	@RequestMapping(method = RequestMethod.GET, value = "/list")

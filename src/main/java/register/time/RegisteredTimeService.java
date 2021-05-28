@@ -5,18 +5,20 @@ import java.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import register.user.User;
+
 @Service
 public class RegisteredTimeService {
 
 	@Autowired
 	RegisteredTimeRepository regTimeRepo;
 
-	public void registerTime(Integer userId) {
+	public void registerTime(User user) {
 		RegisteredTime regTime = new RegisteredTime();
 
-		if (userId != null) {
+		if (user.getId() != null) {
 			regTime.setTimeRegistered(LocalDateTime.now());
-			regTime.setUserId(userId);
+			regTime.setUserId(user.getId());
 			this.regTimeRepo.save(regTime);
 		}
 	}
