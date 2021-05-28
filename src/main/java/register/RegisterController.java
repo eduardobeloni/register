@@ -1,5 +1,6 @@
 package register;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,9 +34,9 @@ public class RegisterController {
 		return this.userService.getAllUsers();
 	}
 
-	@RequestMapping(method = RequestMethod.GET, value = "/check/{id}")
-	public User getUser(@PathVariable Integer id) {
-		return this.userService.getById(id);
+	@RequestMapping(method = RequestMethod.GET, value = "/list/{id}")
+	public List<LocalDateTime> getUser(@PathVariable Integer id) {
+		return this.userService.getRegisteredTimesByUserId(id);
 	}
 
 }

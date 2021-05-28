@@ -1,12 +1,13 @@
 package register.user;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import register.time.RegisteredTime;
 import register.time.RegisteredTimeRepository;
 
 @Service
@@ -30,16 +31,14 @@ public class UserService {
 		return null;
 	}
 
-	public User getById(Integer id) {
-		Optional<User> opt = this.userRepo.findById(id);
-		User user = new User();
+	public List<LocalDateTime> getRegisteredTimesByUserId(Integer id) {
+		List<LocalDateTime> timesRegistered = new ArrayList<>();
+		List<RegisteredTime> regTimes = regTimeRepo.findByUserId(id);
 
-		if (opt.isPresent()) {
-			user = opt.get();
-			user.setRegisteredTimes(this.regTimeRepo.findByUserId(user.getId()));
-		}
+		for (RegisteredTime regTime : regTimes)
+			timesRegistered.add(regTime.getTimeRegistered());
 
-		return user;
+		return timesRegistered;
 	}
 
 	public List<User> getAllUsers() {
