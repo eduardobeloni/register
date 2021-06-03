@@ -3,9 +3,8 @@ package register;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -29,69 +28,55 @@ public class RegisterController {
 	@Autowired
 	UserService userService;
 
-	private Integer getCookieUserId(HttpServletRequest request) {
-		Integer userId = null;
-		Cookie userCookies[] = request.getCookies();
+	private Integer loggedUserId = null;
 
-		if (userCookies == null)
-			return null;
+	private boolean isAdmin = false;
 
-		for (Cookie cookie : userCookies) {
-			if (cookie.getName().equals("user-id")) {
-				userId = Integer.parseInt(cookie.getValue());
-				break;
-			}
-		}
-
-		return userId;
-	}
+	private static final int SESSION_EXPIRE_TIME = 2;
 
 	@RequestMapping(method = RequestMethod.POST, value = "/login")
-	public ResponseEntity<String> login(@RequestBody User user, HttpServletResponse response) {
+	public ResponseEntity<String> login(@RequestBody User user, HttpServletRequest request) {
 		UserTO userTO = this.userService.getUserByLogin(user.getEmail(), user.getPassword());
-
 		if (userTO.getId() == null)
 			return new ResponseEntity<String>(HttpStatus.FORBIDDEN);
 
-		Cookie userCookie = new Cookie("user-id", userTO.getId().toString());
-		userCookie.setHttpOnly(true);
-		userCookie.setSecure(false);
-		response.addCookie(userCookie);
+		loggedUserId = userTO.getId();
+		isAdmin = userTO.getName().equals("admin");
+
+		HttpSession session = request.getSession(false);
+		if (session != null)
+			session.invalidate();
+
+		session = request.getSession(true);
+		session.setMaxInactiveInterval(this.SESSION_EXPIRE_TIME * 60);
 
 		return ResponseEntity.ok("Success");
 	}
 
 	@RequestMapping(method = RequestMethod.GET, value = "/dashboard")
 	public List<UserTO> getAllUsers(HttpServletRequest request) {
-		Integer cookieUserId = this.getCookieUserId(request);
-
-		if (cookieUserId == null)
+		HttpSession session = request.getSession(false);
+		if (session == null || !isAdmin)
 			return new ArrayList<UserTO>();
 
-		UserTO userTO = this.userService.getUserById(cookieUserId);
-		if (userTO.getId() != null && userTO.getName().equals("admin"))
-			return this.userService.getAllUsers();
-
-		return new ArrayList<UserTO>();
+		return this.userService.getAllUsers();
 	}
 
 	@RequestMapping(method = RequestMethod.GET, value = "/myregisters")
 	public UserTO getUser(HttpServletRequest request) {
-		Integer cookieUserId = this.getCookieUserId(request);
-
-		if (cookieUserId == null)
+		HttpSession session = request.getSession(false);
+		if (session == null)
 			return new UserTO();
 
-		return this.userService.getUserById(cookieUserId);
+		return this.userService.getUserById(loggedUserId);
 	}
 
 	@RequestMapping(method = RequestMethod.POST, value = "/register")
 	public Boolean register(HttpServletRequest request) {
-		Integer cookieUserId = this.getCookieUserId(request);
-
-		if (cookieUserId == null)
+		HttpSession session = request.getSession(false);
+		if (session == null)
 			return false;
 
-		return this.regTimeService.registerTime(cookieUserId);
+		return this.regTimeService.registerTime(loggedUserId);
 	}
 }
