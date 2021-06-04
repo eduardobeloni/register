@@ -48,7 +48,7 @@ public class RegisterController {
 			session.invalidate();
 
 		session = request.getSession(true);
-		session.setMaxInactiveInterval(this.SESSION_EXPIRE_TIME * 60);
+		session.setMaxInactiveInterval(RegisterController.SESSION_EXPIRE_TIME * 60);
 
 		return ResponseEntity.ok("Success");
 	}
