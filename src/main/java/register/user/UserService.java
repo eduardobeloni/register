@@ -36,9 +36,10 @@ public class UserService {
 
 	public UserTO getUserByLogin(String email, String password) {
 		UserTO userTO = new UserTO();
-		List<User> users = this.userRepo.findByEmailAndPassword(email, password);
-		if (users.size() > 0)
-			userTO = assembleUserTO(users.get(0));
+		User user = this.userRepo.findByEmailAndPassword(email, password);
+
+		if (user != null)
+			userTO = assembleUserTO(user);
 
 		return userTO;
 	}
