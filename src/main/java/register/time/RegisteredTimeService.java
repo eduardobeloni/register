@@ -24,7 +24,7 @@ public class RegisteredTimeService {
 
 		if (userOpt.isPresent()) {
 			regTime.setTimeRegistered(LocalDateTime.now());
-			regTime.setUserId(userOpt.get().getId());
+			regTime.setUser(userOpt.get());
 			this.regTimeRepo.save(regTime);
 
 			return true;
