@@ -3,7 +3,6 @@ package register.user;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -46,10 +45,10 @@ public class UserService {
 
 	public UserTO getUserById(Integer id) {
 		UserTO userTO = new UserTO();
-		Optional<User> userOpt = this.userRepo.findById(id);
+		User user = this.userRepo.findByUserId(id);
 
-		if (userOpt.isPresent())
-			userTO = assembleUserTO(userOpt.get());
+		if (user != null)
+			userTO = assembleUserTO(user);
 
 		return userTO;
 	}
